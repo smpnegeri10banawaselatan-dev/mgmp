@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Database Media Pembelajaran</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+  <h1 class="text-2xl font-bold mb-4">📚 Database Media Pembelajaran</h1>
+  
+  <form id="formMedia" class="bg-white p-4 rounded shadow mb-6">
+    <input class="border p-2 w-full mb-2" type="text" id="judul" placeholder="Judul Media" required>
+    <input class="border p-2 w-full mb-2" type="text" id="jenis" placeholder="Jenis (Video/Modul/etc)" required>
+    <input class="border p-2 w-full mb-2" type="text" id="kelas" placeholder="Kelas" required>
+    <input class="border p-2 w-full mb-2" type="text" id="mapel" placeholder="Mata Pelajaran" required>
+    <textarea class="border p-2 w-full mb-2" id="deskripsi" placeholder="Deskripsi"></textarea>
+    <input class="border p-2 w-full mb-2" type="url" id="link" placeholder="Link Media" required>
+    <input class="border p-2 w-full mb-2" type="text" id="pengunggah" placeholder="Nama Pengunggah" required>
+    <button class="bg-blue-600 text-white px-4 py-2 rounded">Simpan</button>
+  </form>
+
+  <h2 class="text-xl font-semibold mb-2">📖 Daftar Media</h2>
+  <div id="dataMedia" class="grid gap-4"></div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbxPc1h-KHcaUpPPJr-jpXBmA0AR2gJGry2UiEfdcTTv69YS2StWuyC_8B7BM5ZmWm1RCg/exec";
+
+    async function loadData() {
+      let res = await fetch(API_URL);
+      let data = await res.json();
+      let container = document.getElementById("dataMedia");
+      container.innerHTML = "";
+      data.forEach(m => {
+        container.innerHTML += `
+          <div class="bg-white p-4 rounded shadow">
+            <h3 class="font-bold">${m.judul}</h3>
+            <p><b>Kelas:</b> ${m.kelas} | <b>Mapel:</b> ${m.mapel}</p>
+            <p>${m.deskripsi}</p>
+            <a href="${m.link}" target="_blank" class="text-blue-600">Lihat Media</a>
+            <p class="text-sm text-gray-500">Upload: ${m.pengunggah} (${m.tanggal})</p>
+          </div>
+        `;
+      });
+    }
+
+    document.getElementById("formMedia").addEventListener("submit", async e => {
+      e.preventDefault();
+      let data = {
+        judul: document.getElementById("judul").value,
+        jenis: document.getElementById("jenis").value,
+        kelas: document.getElementById("kelas").value,
+        mapel: document.getElementById("mapel").value,
+        deskripsi: document.getElementById("deskripsi").value,
+        link: document.getElementById("link").value,
+        pengunggah: document.getElementById("pengunggah").value
+      };
+      await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify(data)
+      });
+      loadData();
+      e.target.reset();
+    });
+
+    loadData();
+  </script>
+</body>
+</html>
+
+
